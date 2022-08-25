@@ -61,7 +61,7 @@
                     label-width="80px"
                     :inline="true"
                     size="small"
-            >
+                >
                     <el-form-item label="所属部门" prop="parentName">
                         <el-input
                             v-model="dept.parentName"
