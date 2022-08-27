@@ -1,13 +1,13 @@
 <template>
     <el-main>
     <!-- 查询条件 -->
-        <el-form :model="searchModel" ref="searchForm" label-width="80px" :inline="true" size="small">
-            <el-form-item>
-                <el-input placeholder="请输入部门名称" v-model="searchModel.departmentName"></el-input>
+    <el-form :model="searchModel" ref="searchForm" label-width="80px" :inline="true" size="small">
+        <el-form-item>
+            <el-input placeholder="请输入部门名称" v-model="searchModel.departmentName"></el-input>
         </el-form-item>
         <el-form-item>
             <el-button type="primary" icon="el-icon-search" @click="search()">查询</el-button>
-            <el-button icon="el-icon-refresh-right" >重置</el-button>
+            <el-button icon="el-icon-refresh-right" @click="resetValue()">重置</el-button>
             <el-button type="success" icon="el-icon-plus" @click="openAddWindow()">新增</el-button>
         </el-form-item>
     </el-form>
@@ -21,11 +21,11 @@
     default-expand-all
     :tree-props="{ children: 'children' }"
     >
-    <el-table-column prop="departmentName" label="部门名称"></el-table-column>
-    <el-table-column prop="parentName" label="所属部门"></el-table-column>
-    <el-table-column prop="phone" label="部门电话"></el-table-column>
-    <el-table-column prop="address" label="部门位置"></el-table-column>
-    <el-table-column label="操作" width="200" align="center">
+        <el-table-column prop="departmentName" label="部门名称"></el-table-column>
+        <el-table-column prop="parentName" label="所属部门"></el-table-column>
+        <el-table-column prop="phone" label="部门电话"></el-table-column>
+        <el-table-column prop="address" label="部门位置"></el-table-column>
+        <el-table-column label="操作" width="200" align="center">
                 <template slot-scope="scope">
                     <el-button
                         icon="el-icon-edit-outline" 
@@ -42,8 +42,8 @@
                         >删除
                     </el-button>
                 </template>
-            </el-table-column>
-        </el-table>
+        </el-table-column>
+    </el-table>
         <!-- 添加和修改窗口 -->
         <system-dialog
             :title="deptDialog.title"
@@ -81,7 +81,7 @@
                     <el-form-item label="序号">
                         <el-input v-model="dept.orderNum"></el-input>
                     </el-form-item>
-            </el-form>
+                </el-form>
             </div>
         </system-dialog>
         <!-- 选择所属部门窗口 -->
@@ -298,6 +298,15 @@ export default {
             this.deptDialog.title = "编辑部门";
             //显示编辑部门窗口
             this.deptDialog.visible = true;
+        },
+        /**
+        * 重置查询条件
+        */
+        resetValue() {
+            //清空数据
+            this.searchModel.departmentName = '';
+            //重新查询
+            this.search();
         },
         /**
          * 删除部门

@@ -399,7 +399,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-::v-deep .el-tree {
+    ::v-deep .el-tree {
         .el-tree-node {
             position: relative;
             padding-left: 10px;
