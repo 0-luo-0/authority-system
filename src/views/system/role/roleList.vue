@@ -402,7 +402,6 @@ export default {
                 roleId: this.roleId,
                 list: listId
             }
-            console.log(params)
             //发送请求
             let res = await assignSave(params)
             //判断是否成功
