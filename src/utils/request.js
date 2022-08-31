@@ -1,7 +1,10 @@
 import axios from 'axios'
 import { MessageBox, Message } from 'element-ui'
 import store from '@/store'
-import { getToken } from '@/utils/auth'
+//导入auth.js脚本
+import { getToken,setToken,clearStorage,setTokenTime,getTokenTime,removeTokenTime } from '@/utils/auth'
+//导入刷新token的api脚本
+import {refreshTokenApi} from '@/api/user'
 
 //导入qs依赖
 import qs from 'qs'
@@ -11,9 +14,57 @@ const service = axios.create({
   // withCredentials: true, // send cookies when cross-domain requests
   timeout: 15000 //  请求超时时间
 })
+
+//刷新token
+function refreshTokenInfo(){
+  //设置请求参数
+  let params ={
+    token:getToken()
+  }
+  return refreshTokenApi(params).then(res=>res)
+}
+
+//定义变量是否刷新token
+let isRefresh = false;
+
 //  请求前拦截
 service.interceptors.request.use(
   config => {
+    //获取当前系统时间
+    let currentTime = new Date().getTime();
+    //获取token过期时间
+    let expireTime = getTokenTime()
+    //判断token是否过期
+    if(expireTime > 0){
+      //计算过期的时间
+      let min = (expireTime-currentTime) /1000 /60;
+      //如果token离过期时间相差10分钟，刷新token
+      if(min < 10){
+        //判断是否刷新token
+        if(!isRefresh){
+          //修改刷新状态
+          isRefresh = true;
+          //调用刷新token的方法
+          return refreshTokenInfo().then(res=>{
+            //判断是否成功
+            if(res.success){
+              //设置新的token和新的过期时间
+              setToken(res.data.token);
+              setTokenTime(res.data.expireTime);
+              //将新的token添加到header中
+              config.headers.token = getToken();
+            }
+            //返回配置
+            return config;
+          }).catch(error=>{
+
+          }).finally(()=>{
+            //修改token状态
+            isRefresh = false;
+          })
+        }
+      }
+    }
     //判断store中是否存在token
     if (store.getters.token) {
       //读取token信息，并将token添加到headers头部信息中
@@ -22,6 +73,10 @@ service.interceptors.request.use(
     return config
   },
   error => {
+    //清空sessionStorage
+    clearStorage()
+    //清空token过期时间
+    removeTokenTime();
     return Promise.reject(error)
   }
 )
@@ -46,6 +101,10 @@ service.interceptors.response.use(
           type: 'warning'
         }).then(() => {
           store.dispatch('user/resetToken').then(() => {
+            //清空sessionStorage
+            clearStorage()
+            //清空token过期时间
+            removeTokenTime();
             location.reload()
           })
         })
@@ -57,6 +116,10 @@ service.interceptors.response.use(
   },
   error => {
     console.log('err' + error) // for debug
+    //清空sessionStorage
+    clearStorage()
+    //清空token过期时间
+    removeTokenTime();
     Message({
       message: error.message,
       type: 'error',

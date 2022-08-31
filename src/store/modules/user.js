@@ -1,9 +1,9 @@
 import { login, logout, getInfo } from '@/api/user'
-import { getToken, setToken, removeToken } from '@/utils/auth'
+import { getToken, setToken, removeToken, setTokenTime } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
 
 const state = {
-  token: getToken(),
+  token: getToken(),//获取token信息
   name: '',
   avatar: '',
   introduction: '',
@@ -11,18 +11,23 @@ const state = {
 }
 
 const mutations = {
+  //设置token
   SET_TOKEN: (state, token) => {
     state.token = token
   },
+  //设置个人介绍
   SET_INTRODUCTION: (state, introduction) => {
     state.introduction = introduction
   },
+  //设置用户姓名
   SET_NAME: (state, name) => {
     state.name = name
   },
+  //设置用户头像
   SET_AVATAR: (state, avatar) => {
     state.avatar = avatar
   },
+  //设置用户对应的角色信息
   SET_ROLES: (state, roles) => {
     state.roles = roles
   },
@@ -41,11 +46,13 @@ const actions = {
       //传递用户名和密码参数
       login({ username: username.trim(), password: password }).then(response => {
         //解构出后端返回的数据
-        const { token } = response
+        const { token,expireTime } = response
         //将返回的token信息保存到store中
         commit('SET_TOKEN', token)
         //设置token
         setToken(token)
+        //设置过期时间
+        setTokenTime(expireTime)
         resolve()
       }).catch(error => {
         reject(error)
@@ -75,6 +82,8 @@ const actions = {
         commit('SET_AVATAR', avatar)
         commit('SET_INTRODUCTION', introduction)
         commit('SET_USERUID', id);//用户ID
+        //将权限字段保存到sessionStorage中
+        sessionStorage.setItem("codeList",JSON.stringify(roles));
         resolve(data)
       }).catch(error => {
         reject(error)

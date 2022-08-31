@@ -1,6 +1,8 @@
 import Cookies from 'js-cookie'
 
 const TokenKey = 'Admin-Token'
+//定义token过期时间key
+const timeKey = 'expireTime'
 
 /**
  * 获取token
@@ -31,5 +33,29 @@ export function removeToken() {
 */
 export function clearStorage(){
   return sessionStorage.clear();
-  }
+}
+
+/**
+ * 设置token过期时间
+ */
+export function setTokenTime(time){
+  return sessionStorage.setItem(timeKey,time);
+}
+
+/**
+ * 获取token过期时间
+ * @param time 
+ */
+export function getTokenTime(time){
+  return sessionStorage.getItem(timeKey,time);
+}
+
+/**
+ * 清空token过期时间
+ * @param time 
+ */
+export function removeTokenTime(time){
+  return sessionStorage.setItem(timeKey,0);
+}
+
   

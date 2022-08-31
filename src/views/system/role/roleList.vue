@@ -14,7 +14,7 @@
         <el-form-item>
             <el-button type="primary" icon="el-icon-search" @click="search(pageNo,pageSize)">查询</el-button>
             <el-button icon="el-icon-refresh-right" @click="resetValue()">重置</el-button>
-            <el-button type="success" icon="el-icon-plus" @click="openAddWindow()">新增</el-button>
+            <el-button type="success" icon="el-icon-plus" @click="openAddWindow()" v-if="hasPermission('sys:role:add')">新增</el-button>
         </el-form-item>
     </el-form>
     <!-- 数据表格 -->
@@ -36,6 +36,7 @@
                 type="primary"
                 size="small"
                 @click="handleEdit(scope.row)"
+                v-if="hasPermission('sys:role:edit')"
                 >编辑
                 </el-button>
                 <el-button
@@ -43,6 +44,7 @@
                 type="danger"
                 size="small"
                 @click="handleDelete(scope.row)"
+                v-if="hasPermission('sys:role:delete')"
                 >删除
                 </el-button>
                 <el-button
@@ -50,6 +52,7 @@
                 type="primary"
                 size="small"
                 @click="assignRole(scope.row)"
+                v-if="hasPermission('sys:role:assign')"
                 >分配权限
                 </el-button>
             </template>
